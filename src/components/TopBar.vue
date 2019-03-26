@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<header>
 		<div class="top-bar flex">
 			<div class="back" @click="$router.go(-1);">
 				<span class="icon-back"></span>
@@ -24,7 +24,7 @@
 			</div>
 		</div>
 		<div style="height:0.9rem;"></div>
-	</div>
+	</header>
 </template>
 
 <script>
@@ -74,8 +74,10 @@
 		left: 0;
 		background-color: #FFFFFF;
 		border-bottom: 1px solid #e5e5e5;
+		z-index: 1000;
 	}
-	.top-bar .solt{
+	
+	.top-bar .solt {
 		padding: 0px 0.6rem;
 	}
 	
@@ -108,6 +110,7 @@
 		bottom: 0;
 		left: 0;
 		right: 0;
+		z-index: 999;
 		/*background-color: red;*/
 	}
 	
