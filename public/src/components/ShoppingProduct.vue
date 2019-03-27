@@ -1,91 +1,145 @@
 <template>
-	<div class="shopping-product">
-		<div class="product-select">
-			<check-box></check-box>
+
+	<div class="shopping-product flex">
+
+		<div class="select">
+			<checkbox :arr="value" :value="id" @input="selectChange" ></checkbox>
 		</div>
+
 		<div class="product-image">
-			<img src="https://img10.360buyimg.com/mobilecms/s117x117_jfs/t1/22965/4/12454/235761/5c983056Edbdeb7af/a462bc4028c3f3d5.jpg!q70.dpg.webp" />
+			<img :src="image" />
 		</div>
-		<div class="product-title">
-			耐克NIKE 男子 休闲鞋 TANJUN 运动鞋 812654-011黑色44码
-		</div>
-		<div class="product-sumbit">
-			<div class="product-sumbit-price left">
-				￥368.00
+
+		<div class="product-info flex-item">
+			<div class="product-title" v-text="title"></div>
+			<div class="clear">
+				<div class="product-price left">￥<span v-text="price"></span></div>
+				<div class="product-count right">
+					<span @click="n = n<=1?1:--n;$emit('countChange',n);" >-</span>
+					<span v-text="n"></span>
+					<span @click="n++;$emit('countChange',id,n);">+</span>
+				</div>
 			</div>
-			<div class=" product-sumbit-button right">
-				<span>-</span>
-				<span>1</span>
-				<span>+</span>
-			</div>
+
 		</div>
+
 	</div>
+
 </template>
 
 <script>
-	import CheckBox from "@/components/CheckBox.vue";
+	import checkbox from "@/components/CheckBox";
 	export default {
 		data() {
-			return {}
+			return {
+				n:1
+			}
+		},
+		props: {
+			id: {
+				type: Number,
+				required: true
+			},
+			title: {
+				type: String
+			},
+			image: {
+				type: String
+			},
+			price:{
+				type:Number,
+				default:0
+			},
+			count: {
+				type: Number,
+				default:1
+			},
+			value:{
+				type:Array,
+				defalut:[]
+			}
+		},
+		methods:{
+			selectChange(val){
+				this.$emit('input',val);
+			}
 		},
 		components: {
-			CheckBox,
+			checkbox
+		},
+		created(){
+			this.n = this.count;
+			
 		}
 	}
 </script>
 
 <style>
 	.shopping-product {
-		z-index: 1;
+		padding: 0.1rem 0.2rem 0.3rem 0;
+	}
+	
+	.shopping-product .select {
+		width: 0.8rem;
+		font-size: 0.4rem;
+		padding-top: 0.55rem;
+	}
+	
+	.shopping-product .check-box {
 		position: relative;
-		min-height: 1.5rem;
-		padding: 0.1rem 0.2rem 0.3rem 2.56rem;
-		background: #fff;
+		left: 50%;
+		margin-left: -0.2rem;
 	}
 	
-	.product-select {
-		position: absolute;
-		top: 0.7rem;
-		left: 0.3rem
+	.shopping-product .product-image {
+		width: 1.5rem;
+		height: 1.5rem;
+		padding-right: 0.2rem;
 	}
 	
-	.product-image img {
-		position: absolute;
-		left: 0.86rem;
-		top: 0.1rem;
-		display: block;
+	.shopping-product .product-image img {
 		width: 1.5rem;
 		height: 1.5rem;
 	}
 	
-	.product-title {
-		font-size: 14px;
-		margin-bottom: 5px;
-		word-break: break-all
+	.shopping-product .product-info {
+		height: auto;
 	}
 	
-	.product-sumbit-price {
-		color: #e93b3d;
-		font-size:0.3rem;
-		
-	}
-	
-	.product-sumbit-button {
-		position: relative;
-		display: block;
-		width: 2rem;
-		border-radius: 4px;
+	.shopping-product .product-info .product-title {
 		overflow: hidden;
-		background-color: #f7f7f7;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		word-break: break-word;
+		font-size: 0.28rem;
+		line-height: 0.32rem;
+		height: 0.64rem;
+		margin-top: 0;
+		margin-bottom: 0.1rem;
+		word-break: break-all;
 	}
 	
-	.product-sumbit-button span {
-		position: relative;
-		float: left;
+	.shopping-product .clear {
+		margin-top: 0.1rem;
+	}
+	
+	.shopping-product .product-price {
+		color: #e93b3d;
+		font-size: 0.2rem;
+	}
+	
+	.shopping-product .product-price span {
+		font-size: 0.32rem;
+	}
+	
+	.shopping-product .product-count span {
+		display: inline-block;
 		width: 0.6rem;
 		height: 0.6rem;
 		line-height: 0.6rem;
 		text-align: center;
-		display: inline-block;
+		background-color: #f7f7f7;
 	}
 </style>

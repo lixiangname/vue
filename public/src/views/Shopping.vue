@@ -1,66 +1,149 @@
 <template>
 
-	<div>
+	<div id="shopping-cart">
 		<top-bar>
+
 			<div class="title">购物车</div>
+
 		</top-bar>
-		<shopping-product v-for="n in 10" ></shopping-product>
-		<div class="shoppingbar flex">
-			<div class="shoppingbar-sumbit">
-				<check-box></check-box>
+		
+		
+		<div class="product-list">
+			
+			<shopping-product v-for="(item,index) in products" 
+							:id="item.id"
+							:count="item.count"
+							:title="item.title"
+							:image="item.image"
+							:price="item.price"
+							v-model="selected"
+							@countChange="countChange"></shopping-product>
+			
+			<div>{{selected}}</div>
+			
+			<div>{{products}}</div>
+			
+		</div>
+		
+
+		<div class="check-group flex">
+			<div class="select-all">
+				<checkbox v-model="all"></checkbox>
 				<span>全选</span>
 			</div>
-			<div class="bar-right flex-item">
-				总计:
-				<span>￥{{sum}}</span>
+			<div class="total-price flex-item">
+				总价: <span>￥{{sum}}</span>
 			</div>
-			<div class="shoppingbar-buy">
-				去结算<span>({{count}})</span>
-			</div>
+			<div class="pay-btn">去结算 <span>({{count}}件)</span></div>
 		</div>
+
 	</div>
 
 </template>
 
 <script>
 	import TopBar from "@/components/TopBar.vue";
-	import CheckBox from "@/components/CheckBox.vue";
+	import checkbox from "@/components/CheckBox";
 	import ShoppingProduct from "@/components/ShoppingProduct";
 	export default {
 		data() {
 			return {
-				sum: 0,
-				count: 0
+				all:false,
+				selected:[1,3],
+				products:[
+				{id:1,image:require("@/assets/images/product1.jpg"),title:'商品标题',price:12.32,count:1},
+				{id:2,image:require("@/assets/images/product1.jpg"),title:'商品标题',price:12.32,count:1},
+				{id:3,image:require("@/assets/images/product1.jpg"),title:'商品标题',price:12.32,count:1},
+				],
+			}
+		},
+		methods:{
+			countChange(id,n){
+				this.products.forEach((item,index)=>{
+					if(item.id==id){
+						this.products[index].count = n;
+					}
+				});
+			}
+		},
+		//计算属性
+		computed:{
+			// 总数
+			count(){
+				let n=0;
+				this.selected.forEach(item=>{
+					this.products.forEach(pro=>{
+						if(pro.id==item){
+							n+=pro.count
+						}
+					})
+				})
+				return n
+			},
+			
+			// 总价
+		sum(){
+			let n = 0;
+			this.selected.forEach(item=>{
+				this.products.forEach(pro=>{
+					if(pro.id==item){
+						n+=pro.count*pro.price
+					}
+				})
+			})
+				return n
 			}
 		},
 		components: {
 			TopBar,
-			CheckBox,
+			checkbox,
 			ShoppingProduct
+		},
+		watch:{
+			all(val){
+				if (val) {
+					this.selected=[];
+					this.products.forEach(item=>{
+						this.selected.push(item.id);
+					})
+					
+				} else{
+					this.selected=[];
+				}
+			},
+			selected(val){
+				if (val.length==this.products.length) {
+					this.all=true;
+				} else if(this.selected.length == this.products.length){
+					this.all=false;
+				}
+			}
 		}
 	}
 </script>
 
 <style>
-	.title {
-		height: 0.88rem;
+	#shopping-cart .title {
+		text-align: center;
 		line-height: 0.88rem;
 		font-size: 0.36rem;
 		color: #333;
-		text-align: center;
 	}
 	
-	.shoppingbar {
-		z-index: 99999;
+	.product-list{
+		padding: 0.2rem 0 1.5rem;
+	}
+	
+	.check-group {
 		width: 100%;
-		position: fixed;
-		left: 0;
-		bottom: 0;
 		height: 1rem;
 		background-color: #FFFFFF;
+		position: fixed;
+		bottom: 0;
+		left: 0;
 	}
 	
-	.shoppingbar:before {
+	.check-group:before {
 		content: "";
 		position: absolute;
 		z-index: 1;
@@ -71,7 +154,8 @@
 		right: 0;
 		top: 0;
 	}
-	.shoppingbar-sumbit {
+	
+	.check-group .select-all {
 		width: 0.8rem;
 		padding-top: 0.64rem;
 		font-size: 0.2rem;
@@ -80,25 +164,16 @@
 		color: #999;
 		position: relative;
 	}
-	.shoppingbar-sumbit .check-box {
+	
+	.check-group .check-box {
+		font-size: 0.4rem;
 		position: absolute;
-		left: 50%;
 		top: 0.2rem;
-		content: "";
+		left: 50%;
 		margin-left: -0.2rem;
 	}
-	.bar-right {
-		padding-top: 0.2rem;
-		font-weight: 700;
-		line-height: 1em;
-		height: 1rem;
-		text-align: right;
-		float: left;
-		font-size: 0.32rem;
-	}
-	.shoppingbar-buy {
-		float: right;
-		display: block;
+	
+	.check-group .pay-btn {
 		width: 2.2rem;
 		height: 1rem;
 		margin-left: 0.2rem;
@@ -109,7 +184,21 @@
 		background: #e4393c;
 		color: #fff;
 	}
-	.bar-right span{
+	
+	.check-group .total-price {
+		font-size: 0.32rem;
+		font-weight: 700;
+		line-height: 1rem;
+		text-align: right;
+	}
+	
+	.check-group .total-price span {
 		color: #e93b3d;
+	}
+	
+	.check-group .pay-btn span {
+		font-weight: 400;
+		font-size: 0.24rem;
+		font-family: none;
 	}
 </style>
